@@ -1,0 +1,15 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SOPORTE TÉCNICO - SIDON</title>
+</head>
+<body style="background: #050505; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: sans-serif;">
+    <div style="text-align: center; padding: 20px; border: 1px solid #333; border-radius: 10px; background: #0a0a0a;">
+        <h1 style="color: #3b82f6;">MODO DIAGNÓSTICO ACTIVO</h1>
+        <p>Si puedes leer esto, el servidor está funcionando correctamente.</p>
+        <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
+        <p style="font-size: 12px; color: #666;">SUCURSAL ESMERALDA - CIUDAD JUÁREZ</p>
+    </div>
+</body>
+</html>

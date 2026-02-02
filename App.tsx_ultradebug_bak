@@ -1,0 +1,30 @@
+
+import React, { useState, useEffect } from 'react';
+
+const App: React.FC = () => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+        setLoading(false);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return (
+      <div style={{ height: '100vh', width: '100vw', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#050505', color: 'white' }}>
+        <h1 style={{ fontSize: '24px' }}>DEBUG: CARGANDO...</h1>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ minHeight: '100vh', width: '100vw', backgroundColor: '#050505', color: 'white', padding: '20px' }}>
+      <h1>DEBUG: SITE WORKING</h1>
+      <p>Simplified App with no component imports.</p>
+    </div>
+  );
+};
+
+export default App;

@@ -1,0 +1,43 @@
+
+import React, { useState, useEffect } from 'react';
+import Header from './components/Header';
+import MetricCard from './components/MetricCard';
+import { OperationalStatus } from './types';
+
+const App: React.FC = () => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    console.log('App mounted');
+    const timer = setTimeout(() => {
+        console.log('Loading finished');
+        setLoading(false);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return (
+      <div style={{ height: '100vh', width: '100vw', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#050505', color: 'white' }}>
+        <h1 style={{ fontSize: '24px' }}>SUCURSAL ESMERALDA - CARGANDO...</h1>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ minHeight: '100vh', width: '100vw', backgroundColor: '#050505', color: 'white', padding: '20px' }}>
+      <Header
+        storeName="SUCURSAL ESMERALDA"
+        location="Ciudad Juárez, MX"
+        globalStatus={OperationalStatus.OPTIMAL}
+      />
+      <div style={{ marginTop: '20px' }}>
+        <MetricCard title="TEST CARD">
+            <p>If you see this, the site is working.</p>
+        </MetricCard>
+      </div>
+    </div>
+  );
+};
+
+export default App;
