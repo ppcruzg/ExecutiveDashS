@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import DumaPage from './DumaPage';
+import { useTheme } from '../context/ThemeContext';
 
 interface StaffProfile {
   name: string;
@@ -14,6 +15,7 @@ interface StaffProfile {
 
 const StaffingEfficiency: React.FC = () => {
   const [showDumaPage, setShowDumaPage] = useState(false);
+  const { theme } = useTheme();
 
   const profiles: StaffProfile[] = [
     {
@@ -103,7 +105,6 @@ const StaffingEfficiency: React.FC = () => {
 
   // Calcular riesgo de pago por ghost workers
   const dailyGhostCost = totalGhostWorkers * 8 * 15; // Ghost workers × 8h × $15/h
-  const monthlyGhostCost = dailyGhostCost * 30;
 
   return (
     <>
@@ -111,48 +112,48 @@ const StaffingEfficiency: React.FC = () => {
         {/* MÉTRICAS PRINCIPALES - ARRIBA */}
         <div className="grid grid-cols-3 gap-2 mb-2">
           {/* Inasistencia */}
-          <div className="bg-white/5 p-1.5 rounded-lg border border-white/10">
-            <div className="text-[8px] text-gray-500 uppercase tracking-widest mb-0.5">Inasistencia</div>
+          <div className="bg-surface-accent p-1.5 rounded-lg border border-border-color">
+            <div className="text-[8px] text-text-secondary uppercase tracking-widest mb-0.5">Inasistencia</div>
             <div className="flex items-baseline gap-1">
-              <div className={`text-xl font-black ${(totalAssigned - totalAttendance) === 0 ? 'text-emerald-400' :
-                  (totalAssigned - totalAttendance) <= 2 ? 'text-amber-400' :
-                    'text-rose-400'
+              <div className={`text-xl font-black ${(totalAssigned - totalAttendance) === 0 ? 'text-emerald-600 dark:text-emerald-400' :
+                (totalAssigned - totalAttendance) <= 2 ? 'text-amber-600 dark:text-amber-400' :
+                  'text-rose-600 dark:text-rose-400'
                 }`}>
                 {totalAssigned - totalAttendance}
               </div>
-              <div className="text-[9px] text-gray-400">
+              <div className="text-[9px] text-text-muted">
                 {((totalAssigned - totalAttendance) / totalAssigned * 100).toFixed(1)}%
               </div>
             </div>
           </div>
 
           {/* Ghost Workers */}
-          <div className="bg-white/5 p-1.5 rounded-lg border border-white/10">
-            <div className="text-[8px] text-gray-500 uppercase tracking-widest mb-0.5">👻 Ghosts</div>
+          <div className="bg-surface-accent p-1.5 rounded-lg border border-border-color">
+            <div className="text-[8px] text-text-secondary uppercase tracking-widest mb-0.5">👻 Ghosts</div>
             <div className="flex items-baseline gap-1">
-              <div className={`text-xl font-black ${totalGhostWorkers === 0 ? 'text-emerald-400' :
-                  totalGhostWorkers <= 2 ? 'text-amber-400' :
-                    'text-rose-400'
+              <div className={`text-xl font-black ${totalGhostWorkers === 0 ? 'text-emerald-600 dark:text-emerald-400' :
+                totalGhostWorkers <= 2 ? 'text-amber-600 dark:text-amber-400' :
+                  'text-rose-600 dark:text-rose-400'
                 }`}>
                 {totalGhostWorkers}
               </div>
-              <div className="text-[9px] text-gray-400">
+              <div className="text-[9px] text-text-muted">
                 {ghostRate}%
               </div>
             </div>
           </div>
 
           {/* Riesgo de Pago */}
-          <div className="bg-white/5 p-1.5 rounded-lg border border-white/10">
-            <div className="text-[8px] text-gray-500 uppercase tracking-widest mb-0.5">Riesgo</div>
+          <div className="bg-surface-accent p-1.5 rounded-lg border border-border-color">
+            <div className="text-[8px] text-text-secondary uppercase tracking-widest mb-0.5">Riesgo</div>
             <div className="flex items-baseline gap-1">
-              <div className={`text-sm font-black ${totalGhostWorkers === 0 ? 'text-emerald-400' :
-                  totalGhostWorkers <= 2 ? 'text-amber-400' :
-                    'text-rose-400'
+              <div className={`text-sm font-black ${totalGhostWorkers === 0 ? 'text-emerald-600 dark:text-emerald-400' :
+                totalGhostWorkers <= 2 ? 'text-amber-600 dark:text-amber-400' :
+                  'text-rose-600 dark:text-rose-400'
                 }`}>
                 ${dailyGhostCost.toLocaleString()}
               </div>
-              <div className="text-[9px] text-gray-400">
+              <div className="text-[9px] text-text-muted">
                 /día
               </div>
             </div>
@@ -168,15 +169,15 @@ const StaffingEfficiency: React.FC = () => {
             return (
               <div key={i} className="group cursor-pointer">
                 <div className="flex justify-between items-end mb-1">
-                  <span className="text-xs font-bold text-white group-hover:text-blue-400 transition-colors">
+                  <span className="text-xs font-bold text-text-main group-hover:text-blue-500 transition-colors">
                     {profile.name}
                   </span>
                   <div className="flex items-center gap-2 text-[9px] font-mono">
-                    <span className="text-gray-500">
+                    <span className="text-text-muted">
                       {profile.attendance}/{profile.assigned}
                       <span className="text-[8px] ml-0.5">REG</span>
                     </span>
-                    <span className={`${profile.aiValidated === profile.attendance ? 'text-emerald-400' : 'text-amber-400'}`}>
+                    <span className={`${profile.aiValidated === profile.attendance ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}`}>
                       {profile.aiValidated}
                       <span className="text-[8px] ml-0.5">AI✓</span>
                     </span>
@@ -186,18 +187,18 @@ const StaffingEfficiency: React.FC = () => {
                 {/* Barra de progreso dual */}
                 <div className="space-y-1">
                   {/* Asistencia Registrada */}
-                  <div className="h-1.5 bg-white/5 rounded-full overflow-hidden flex">
+                  <div className="h-1.5 bg-surface-accent rounded-full overflow-hidden flex">
                     <div
-                      className={`h-full transition-all duration-1000 ${profile.status === 'critical' ? 'bg-rose-500/50' :
-                        profile.status === 'warning' ? 'bg-amber-500/50' :
-                          'bg-emerald-500/50'
+                      className={`h-full transition-all duration-1000 ${profile.status === 'critical' ? 'bg-rose-500/30' :
+                        profile.status === 'warning' ? 'bg-amber-500/30' :
+                          'bg-emerald-500/30'
                         }`}
                       style={{ width: `${attendancePercent}%` }}
                     ></div>
                   </div>
 
                   {/* Validación AI Vision */}
-                  <div className="h-1.5 bg-white/5 rounded-full overflow-hidden flex">
+                  <div className="h-1.5 bg-surface-accent rounded-full overflow-hidden flex">
                     <div
                       className={`h-full transition-all duration-1000 ${profile.status === 'critical' ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.4)]' :
                         profile.status === 'warning' ? 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.4)]' :
@@ -210,7 +211,7 @@ const StaffingEfficiency: React.FC = () => {
 
                 {/* Indicador de "Ghost Workers" */}
                 {profile.ghostWorkers > 0 && (
-                  <div className="mt-1 text-[9px] text-rose-400 flex items-center gap-1">
+                  <div className={`mt-1 text-[9px] ${theme === 'dark' ? 'text-rose-400' : 'text-rose-600'} flex items-center gap-1`}>
                     <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                     </svg>
@@ -244,10 +245,10 @@ const StaffingEfficiency: React.FC = () => {
                 <button
                   onClick={() => setShowDumaPage(true)}
                   className={`px-1.5 py-0.5 rounded text-[8px] font-black tracking-wider flex items-center gap-0.5 transition-all duration-300 cursor-pointer ${staffingData.alert.severity === 'critical'
-                    ? 'bg-rose-500/20 text-rose-400 border border-rose-500/40 hover:bg-rose-500/30 hover:scale-105'
+                    ? 'bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/40 hover:bg-rose-500/30 hover:scale-105'
                     : staffingData.alert.severity === 'warning'
-                      ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40 hover:bg-amber-500/30 hover:scale-105'
-                      : 'bg-blue-500/20 text-blue-400 border border-blue-500/40 hover:bg-blue-500/30 hover:scale-105'
+                      ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/40 hover:bg-amber-500/30 hover:scale-105'
+                      : 'bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/40 hover:bg-blue-500/30 hover:scale-105'
                     }`}
                   title="Abrir Panel DUMA"
                 >
@@ -261,10 +262,10 @@ const StaffingEfficiency: React.FC = () => {
                 <div className="flex items-start gap-2">
                   <div className="flex-1 min-w-0">
                     <h4 className={`text-[9px] font-bold uppercase tracking-wide mb-0.5 ${staffingData.alert.severity === 'critical'
-                      ? 'text-rose-400'
+                      ? 'text-rose-600 dark:text-rose-400'
                       : staffingData.alert.severity === 'warning'
-                        ? 'text-amber-400'
-                        : 'text-blue-400'
+                        ? 'text-amber-600 dark:text-amber-400'
+                        : 'text-blue-600 dark:text-blue-400'
                       }`}>
                       {staffingData.alert.severity === 'critical'
                         ? '⚠️ VALIDACIÓN CRÍTICA - AI VISION'
@@ -272,7 +273,7 @@ const StaffingEfficiency: React.FC = () => {
                           ? '⚠️ ATENCIÓN REQUERIDA - PERMANENCIA'
                           : '✓ VALIDACIÓN OPERANDO NORMALMENTE'}
                     </h4>
-                    <p className="text-[9px] text-gray-300 leading-tight">
+                    <p className="text-[9px] text-text-secondary leading-tight line-clamp-2">
                       {staffingData.alert.message}
                     </p>
                   </div>
@@ -319,15 +320,12 @@ const StaffingEfficiency: React.FC = () => {
           width: 4px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.05);
+          background: transparent;
           border-radius: 2px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.2);
+          background: rgba(59, 130, 246, 0.2);
           border-radius: 2px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(255, 255, 255, 0.3);
         }
       `}</style>
     </>

@@ -1,37 +1,42 @@
 
 import React, { useState } from 'react';
 import { MetricCardProps, OperationalStatus } from '../types';
+import { useTheme } from '../context/ThemeContext';
 
 const MetricCard: React.FC<MetricCardProps> = ({ title, subtitle, status, children, className = "" }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const { theme } = useTheme();
 
   const getStatusLabel = (status: OperationalStatus) => {
     switch (status) {
       case OperationalStatus.OPTIMAL: return {
         text: "ÓPTIMO",
-        color: "text-emerald-400",
-        bg: "bg-emerald-400/10",
-        borderColor: "border-emerald-400/30",
-        glowColor: "rgba(16, 185, 129, 0.3)"
+        color: "text-emerald-600 dark:text-emerald-400",
+        bg: "bg-emerald-100 dark:bg-emerald-400/10",
+        borderColor: "border-emerald-200 dark:border-emerald-400/30",
+        glowColor: theme === 'dark' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(16, 185, 129, 0.15)'
       };
       case OperationalStatus.AT_RISK: return {
         text: "EN RIESGO",
-        color: "text-amber-400",
-        bg: "bg-amber-400/10",
-        borderColor: "border-amber-400/30",
-        glowColor: "rgba(245, 158, 11, 0.3)"
+        color: "text-amber-600 dark:text-amber-400",
+        bg: "bg-amber-100 dark:bg-amber-400/10",
+        borderColor: "border-amber-200 dark:border-amber-400/30",
+        glowColor: theme === 'dark' ? 'rgba(245, 158, 11, 0.3)' : 'rgba(245, 158, 11, 0.15)'
       };
       case OperationalStatus.CRITICAL: return {
         text: "CRÍTICO",
-        color: "text-rose-400",
-        bg: "bg-rose-400/10",
-        borderColor: "border-rose-400/30",
-        glowColor: "rgba(239, 68, 68, 0.3)"
+        color: "text-rose-600 dark:text-rose-400",
+        bg: "bg-rose-100 dark:bg-rose-400/10",
+        borderColor: "border-rose-200 dark:border-rose-400/30",
+        glowColor: theme === 'dark' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(239, 68, 68, 0.15)'
       };
     }
   };
 
   const statusInfo = status ? getStatusLabel(status) : null;
+
+  const shadowColor = theme === 'dark' ? 'rgba(0, 0, 0, 0.9)' : 'rgba(31, 38, 135, 0.1)';
+  const baseShadow = theme === 'dark' ? '0 8px 32px rgba(0, 0, 0, 0.8)' : '0 8px 32px rgba(31, 38, 135, 0.07)';
 
   return (
     <div
@@ -39,8 +44,8 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, subtitle, status, childr
       style={{
         transform: isHovered ? 'translateY(-2px)' : 'translateY(0)',
         boxShadow: isHovered && statusInfo
-          ? `0 20px 60px rgba(0, 0, 0, 0.9), 0 0 30px ${statusInfo.glowColor}`
-          : '0 8px 32px rgba(0, 0, 0, 0.8)'
+          ? `0 20px 60px ${shadowColor}, 0 0 30px ${statusInfo.glowColor}`
+          : baseShadow
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -62,7 +67,7 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, subtitle, status, childr
       {/* Decorative animated scanline */}
       <div className="absolute top-0 left-0 w-full h-[2px] overflow-hidden">
         <div
-          className="h-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-all duration-700"
+          className={`h-full bg-gradient-to-r from-transparent via-blue-500/20 ${theme === 'dark' ? 'dark:via-white/40' : 'via-blue-500/10'} to-transparent transition-all duration-700`}
           style={{
             transform: isHovered ? 'translateX(100%)' : 'translateX(-100%)',
             width: '50%'
@@ -86,11 +91,11 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, subtitle, status, childr
 
       <div className="p-4 pb-2 flex justify-between items-start relative z-10">
         <div className="flex-1">
-          <h3 className="text-sm font-bold tracking-widest text-white/90 uppercase transition-all duration-300 group-hover:text-white group-hover:tracking-[0.15em]">
+          <h3 className="text-sm font-bold tracking-widest text-text-main uppercase transition-all duration-300 group-hover:tracking-[0.15em]">
             {title}
           </h3>
           {subtitle && (
-            <p className="text-[10px] text-gray-500 uppercase font-medium mt-1 transition-colors duration-300 group-hover:text-gray-400">
+            <p className="text-[10px] text-text-muted uppercase font-medium mt-1 transition-colors duration-300">
               {subtitle}
             </p>
           )}
@@ -145,15 +150,12 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, subtitle, status, childr
           width: 6px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.02);
+          background: transparent;
           border-radius: 3px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(59, 130, 246, 0.3);
+          background: rgba(59, 130, 246, 0.2);
           border-radius: 3px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(59, 130, 246, 0.5);
         }
       `}</style>
     </div>

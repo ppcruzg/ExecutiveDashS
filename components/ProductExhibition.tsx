@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import DumaPage from './DumaPage';
+import { useTheme } from '../context/ThemeContext';
 
 interface ProductCategory {
   name: string;
@@ -14,6 +15,7 @@ interface ProductCategory {
 
 const ProductExhibition: React.FC = () => {
   const [showDumaPage, setShowDumaPage] = useState(false);
+  const { theme } = useTheme();
 
   const categories: ProductCategory[] = [
     {
@@ -111,46 +113,46 @@ const ProductExhibition: React.FC = () => {
         {/* MÉTRICAS PRINCIPALES - ARRIBA */}
         <div className="grid grid-cols-4 gap-1.5 mb-2">
           {/* Huecos Totales */}
-          <div className="bg-white/5 p-1 rounded-lg border border-white/10">
-            <div className="text-[7px] text-gray-500 uppercase tracking-widest mb-0.5">Total Huecos</div>
+          <div className="bg-surface-accent p-1 rounded-lg border border-border-color">
+            <div className="text-[7px] text-text-muted uppercase tracking-widest mb-0.5">Total Huecos</div>
             <div className="flex items-baseline gap-1">
-              <div className="text-sm font-black text-white">
+              <div className="text-sm font-black text-text-main">
                 {totalGaps}
               </div>
-              <div className="text-[8px] text-gray-400">{gapRate}%</div>
+              <div className="text-[8px] text-text-muted">{gapRate}%</div>
             </div>
           </div>
 
           {/* Huecos Operativos */}
-          <div className="bg-white/5 p-1 rounded-lg border border-white/10">
-            <div className="text-[7px] text-amber-500/80 uppercase tracking-widest mb-0.5">Operación</div>
+          <div className="bg-surface-accent p-1 rounded-lg border border-border-color">
+            <div className="text-[7px] text-amber-600 dark:text-amber-500/80 uppercase tracking-widest mb-0.5">Operación</div>
             <div className="flex items-baseline gap-1">
-              <div className="text-sm font-black text-amber-400">
+              <div className="text-sm font-black text-amber-600 dark:text-amber-400">
                 {totalOperationalGaps}
               </div>
-              <div className="text-[8px] text-gray-400">{((totalOperationalGaps / totalSpaces) * 100).toFixed(1)}%</div>
+              <div className="text-[8px] text-text-muted">{((totalOperationalGaps / totalSpaces) * 100).toFixed(1)}%</div>
             </div>
           </div>
 
           {/* Huecos por Stock */}
-          <div className="bg-white/5 p-1 rounded-lg border border-white/10">
-            <div className="text-[7px] text-rose-500/80 uppercase tracking-widest mb-0.5">Stockout</div>
+          <div className="bg-surface-accent p-1 rounded-lg border border-border-color">
+            <div className="text-[7px] text-rose-600 dark:text-rose-500/80 uppercase tracking-widest mb-0.5">Stockout</div>
             <div className="flex items-baseline gap-1">
-              <div className="text-sm font-black text-rose-400">
+              <div className="text-sm font-black text-rose-600 dark:text-rose-400">
                 {totalStockoutGaps}
               </div>
-              <div className="text-[8px] text-gray-400">{stockoutRate}%</div>
+              <div className="text-[8px] text-text-muted">{stockoutRate}%</div>
             </div>
           </div>
 
           {/* Riesgo Oportunidad (Pérdida de venta) */}
-          <div className="bg-white/5 p-1 rounded-lg border border-white/10">
-            <div className="text-[7px] text-gray-500 uppercase tracking-widest mb-0.5">Oportunidad</div>
+          <div className="bg-surface-accent p-1 rounded-lg border border-border-color">
+            <div className="text-[7px] text-text-muted uppercase tracking-widest mb-0.5">Oportunidad</div>
             <div className="flex items-baseline gap-1">
-              <div className={`text-sm font-black ${totalStockoutGaps === 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+              <div className={`text-sm font-black ${totalStockoutGaps === 0 ? 'text-emerald-500' : 'text-rose-600 dark:text-rose-400'}`}>
                 ${dailyLoss.toLocaleString()}
               </div>
-              <div className="text-[7px] text-gray-400">/día</div>
+              <div className="text-[7px] text-text-muted">/día</div>
             </div>
           </div>
         </div>
@@ -164,18 +166,18 @@ const ProductExhibition: React.FC = () => {
             return (
               <div key={i} className="group cursor-pointer">
                 <div className="flex justify-between items-end mb-1">
-                  <span className="text-xs font-bold text-white group-hover:text-blue-400 transition-colors">
+                  <span className="text-xs font-bold text-text-main group-hover:text-blue-500 transition-colors">
                     {category.name}
                   </span>
                   <div className="flex items-center gap-2 text-[8px] font-mono">
-                    <span className="text-gray-500 bg-white/5 px-1 rounded">
+                    <span className="text-text-muted bg-surface-accent px-1 rounded">
                       {category.gaps} <span className="text-[7px]">HUECOS</span>
                     </span>
-                    <span className={`${category.stockoutGaps === 0 ? 'text-emerald-400' : 'text-rose-400'} bg-white/5 px-1 rounded`}>
+                    <span className={`${category.stockoutGaps === 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'} bg-surface-accent px-1 rounded`}>
                       {category.stockoutGaps} <span className="text-[7px]">STOCKOUT</span>
                     </span>
                     {category.stockoutGaps > 0 && (
-                      <span className="text-rose-400/80 font-bold border-l border-white/10 pl-2">
+                      <span className="text-rose-600 dark:text-rose-500/80 font-bold border-l border-border-color pl-2">
                         -${(category.stockoutGaps * 50).toLocaleString()} <span className="text-[6px]">RIESGO/D</span>
                       </span>
                     )}
@@ -184,7 +186,7 @@ const ProductExhibition: React.FC = () => {
 
                 {/* Barra de huecos - Solo muestra composición de vacíos */}
                 <div className="space-y-1">
-                  <div className="h-2 bg-white/5 rounded-full overflow-hidden flex">
+                  <div className="h-2 bg-surface-accent rounded-full overflow-hidden flex">
                     {/* Huecos operativos (permitidos por planograma) - AMARILLO */}
                     <div
                       className="h-full bg-amber-500/70"
@@ -202,7 +204,7 @@ const ProductExhibition: React.FC = () => {
 
                 {/* Indicador de huecos por stock */}
                 {category.stockoutGaps > 5 && (
-                  <div className="mt-1 text-[9px] text-rose-400 flex items-center gap-1">
+                  <div className="mt-1 text-[9px] text-rose-600 dark:text-rose-400 flex items-center gap-1">
                     <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                     </svg>
@@ -236,10 +238,10 @@ const ProductExhibition: React.FC = () => {
                 <button
                   onClick={() => setShowDumaPage(true)}
                   className={`px-1.5 py-0.5 rounded text-[8px] font-black tracking-wider flex items-center gap-0.5 transition-all duration-300 cursor-pointer ${exhibitionData.alert.severity === 'critical'
-                    ? 'bg-rose-500/20 text-rose-400 border border-rose-500/40 hover:bg-rose-500/30 hover:scale-105'
+                    ? 'bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/40 hover:bg-rose-500/30 hover:scale-105'
                     : exhibitionData.alert.severity === 'warning'
-                      ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40 hover:bg-amber-500/30 hover:scale-105'
-                      : 'bg-blue-500/20 text-blue-400 border border-blue-500/40 hover:bg-blue-500/30 hover:scale-105'
+                      ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/40 hover:bg-amber-500/30 hover:scale-105'
+                      : 'bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/40 hover:bg-blue-500/30 hover:scale-105'
                     }`}
                   title="Abrir Panel DUMA"
                 >
@@ -253,10 +255,10 @@ const ProductExhibition: React.FC = () => {
                 <div className="flex items-start gap-2">
                   <div className="flex-1 min-w-0">
                     <h4 className={`text-[9px] font-bold uppercase tracking-wide mb-0.5 ${exhibitionData.alert.severity === 'critical'
-                      ? 'text-rose-400'
+                      ? 'text-rose-600 dark:text-rose-400'
                       : exhibitionData.alert.severity === 'warning'
-                        ? 'text-amber-400'
-                        : 'text-blue-400'
+                        ? 'text-amber-600 dark:text-amber-400'
+                        : 'text-blue-600 dark:text-blue-400'
                       }`}>
                       {exhibitionData.alert.severity === 'critical'
                         ? '⚠️ DESABASTO CRÍTICO - AI VISION'
@@ -264,7 +266,7 @@ const ProductExhibition: React.FC = () => {
                           ? '⚠️ ATENCIÓN REQUERIDA - REPOSICIÓN'
                           : '✓ EXHIBICIÓN OPERANDO NORMALMENTE'}
                     </h4>
-                    <p className="text-[9px] text-gray-300 leading-tight">
+                    <p className="text-[9px] text-text-secondary leading-tight">
                       {exhibitionData.alert.message}
                     </p>
                   </div>
@@ -311,15 +313,12 @@ const ProductExhibition: React.FC = () => {
           width: 4px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.05);
+          background: transparent;
           border-radius: 2px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.2);
+          background: rgba(59, 130, 246, 0.2);
           border-radius: 2px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(255, 255, 255, 0.3);
         }
       `}</style>
     </>

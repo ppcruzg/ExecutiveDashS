@@ -1,7 +1,7 @@
 
-
 import React, { useState } from 'react';
 import DumaNotificationTabs from './DumaNotificationTabs';
+import { useTheme } from '../context/ThemeContext';
 
 
 interface TrendData {
@@ -235,6 +235,8 @@ interface DumaPageProps {
 }
 
 const DumaPage: React.FC<DumaPageProps> = ({ onClose, visionData, staffingData, exhibitionData, coldChainData }) => {
+    const { theme } = useTheme();
+
     // Crear notificación de AI Vision si hay datos
     const visionNotification: DumaNotification | null = visionData ? {
         id: 'vision-ai',
@@ -275,7 +277,7 @@ const DumaPage: React.FC<DumaPageProps> = ({ onClose, visionData, staffingData, 
 • Tasa de Detección Exitosa: ${(100 - visionData.alert.stats.avgRate).toFixed(1)}%
 
 🎯 ANÁLISIS POR CAJA:
-${(Object.entries(visionData.registerStats) as Array<[string, { total: number; anomalies: number; rate: number; trend: string }]>).map(([name, stats]) =>
+${Object.entries(visionData.registerStats).map(([name, stats]) =>
             `${name}: ${stats.total} ventas | ${stats.anomalies} sin cliente (${stats.rate.toFixed(1)}%) | Tendencia: ${stats.trend === 'increasing' ? '⬆️ Creciente' : stats.trend === 'decreasing' ? '⬇️ Decreciente' : '➡️ Estable'}`
         ).join('\n')}
 
@@ -487,7 +489,7 @@ ${exhibitionData.alert.severity === 'critical'
                     ? `Riesgo Medio - Optimización puede recuperar $${(exhibitionData.totals.stockoutGaps * 50 * 30).toLocaleString()} mensuales en ventas.`
                     : `Sistema optimizado - Exhibición de productos operando correctamente.`}
 
-🎯 PRODUCTOS ESTRATÉGICOS DETECTADOS:
+🎯 INSIGHT DE INTELIGENCIA:
 • Sistema AI identifica productos en tiempo real
 • Clasificación automática de huecos (operativos vs stockout)
 • Alertas proactivas antes de impacto en ventas`,
@@ -508,12 +510,12 @@ ${exhibitionData.alert.severity === 'critical'
             minute: '2-digit'
         }),
         severity: coldChainData.alert.severity,
-        source: 'IoT + AI Vision - Cadena de Frío',
+        source: 'IoT + AI Vision - Estabilidad Operativa',
         title: coldChainData.alert.severity === 'critical'
             ? 'Riesgo Crítico de Merma y Desjugue'
             : coldChainData.alert.severity === 'warning'
                 ? 'Atención Requerida - Desviación Térmica'
-                : 'Cadena de Frío Operando Normalmente',
+                : 'Estabilidad Operativa Normal',
         description: coldChainData.alert.message,
         impact: coldChainData.alert.severity === 'critical'
             ? 'Alto - Impacto directo en calidad de producto y merma'
@@ -529,7 +531,7 @@ ${exhibitionData.alert.severity === 'critical'
             change: coldChainData.totals.avgTimeOutside,
             direction: coldChainData.totals.avgTimeOutside > 60 ? 'down' : coldChainData.totals.avgTimeOutside > 30 ? 'stable' : 'up'
         },
-        aiAnalysis: `ANÁLISIS DE CADENA DE FRÍO
+        aiAnalysis: `ANÁLISIS DE ESTABILIDAD OPERATIVA
 
 📊 MÉTRICAS TÉRMICAS:
 • Áreas en Monitoreo: ${coldChainData.areas.length}
@@ -600,7 +602,7 @@ ${coldChainData.alert.severity === 'critical'
                 return {
                     bg: 'bg-rose-500/10',
                     border: 'border-rose-500/30',
-                    text: 'text-rose-400',
+                    text: 'text-rose-600 dark:text-rose-400',
                     glow: 'rgba(239, 68, 68, 0.3)',
                     label: 'CRÍTICO'
                 };
@@ -608,7 +610,7 @@ ${coldChainData.alert.severity === 'critical'
                 return {
                     bg: 'bg-amber-500/10',
                     border: 'border-amber-500/30',
-                    text: 'text-amber-400',
+                    text: 'text-amber-600 dark:text-amber-400',
                     glow: 'rgba(245, 158, 11, 0.3)',
                     label: 'ATENCIÓN'
                 };
@@ -616,7 +618,7 @@ ${coldChainData.alert.severity === 'critical'
                 return {
                     bg: 'bg-blue-500/10',
                     border: 'border-blue-500/30',
-                    text: 'text-blue-400',
+                    text: 'text-blue-600 dark:text-blue-400',
                     glow: 'rgba(59, 130, 246, 0.3)',
                     label: 'INFO'
                 };
@@ -624,7 +626,7 @@ ${coldChainData.alert.severity === 'critical'
                 return {
                     bg: 'bg-emerald-500/10',
                     border: 'border-emerald-500/30',
-                    text: 'text-emerald-400',
+                    text: 'text-emerald-600 dark:text-emerald-400',
                     glow: 'rgba(16, 185, 129, 0.3)',
                     label: 'BUENA PRÁCTICA'
                 };
@@ -634,13 +636,13 @@ ${coldChainData.alert.severity === 'critical'
     const getStatusConfig = (status: string) => {
         switch (status) {
             case 'pending':
-                return { bg: 'bg-gray-500/10', text: 'text-gray-400', label: 'Pendiente' };
+                return { bg: 'bg-gray-500/10', text: 'text-text-muted', label: 'Pendiente' };
             case 'in-progress':
-                return { bg: 'bg-blue-500/10', text: 'text-blue-400', label: 'En Proceso' };
+                return { bg: 'bg-blue-500/10', text: 'text-blue-600 dark:text-blue-400', label: 'En Proceso' };
             case 'resolved':
-                return { bg: 'bg-emerald-500/10', text: 'text-emerald-400', label: 'Resuelto' };
+                return { bg: 'bg-emerald-500/10', text: 'text-emerald-600 dark:text-emerald-400', label: 'Resuelto' };
             default:
-                return { bg: 'bg-gray-500/10', text: 'text-gray-400', label: 'Desconocido' };
+                return { bg: 'bg-gray-500/10', text: 'text-text-muted', label: 'Desconocido' };
         }
     };
 
@@ -662,13 +664,13 @@ ${coldChainData.alert.severity === 'critical'
         : notifications.filter(n => n.severity === filter);
 
     return (
-        <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm animate-fade-in">
+        <div className={`fixed inset-0 z-50 ${theme === 'dark' ? 'bg-[#0a0a0a]/95' : 'bg-white/95'} backdrop-blur-md animate-fade-in overflow-hidden flex flex-col`}>
             {/* Header */}
-            <div className="glass-card border-b border-white/10">
+            <div className={`border-b ${theme === 'dark' ? 'bg-surface-accent border-white/10' : 'bg-white border-black/5'}`}>
                 <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2">
-                            <div className="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
+                            <div className={`w-10 h-10 rounded-lg ${theme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-gray-50 border-black/5'} border flex items-center justify-center overflow-hidden`}>
                                 <img
                                     src="/assets/LOGODUMA.png"
                                     alt="DUMA Logo"
@@ -676,15 +678,15 @@ ${coldChainData.alert.severity === 'critical'
                                 />
                             </div>
                             <div>
-                                <h1 className="text-xl font-bold text-white tracking-tight">DUMA Intelligence</h1>
-                                <p className="text-xs text-gray-400">Centro de Notificaciones Ejecutivas</p>
+                                <h1 className="text-xl font-bold text-text-main tracking-tight">DUMA Intelligence</h1>
+                                <p className="text-xs text-text-muted">Centro de Notificaciones Ejecutivas</p>
                             </div>
                         </div>
                     </div>
 
                     <button
                         onClick={onClose}
-                        className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-medium transition-all duration-300"
+                        className={`px-4 py-2 rounded-lg ${theme === 'dark' ? 'bg-white/5 hover:bg-white/10 border-white/10' : 'bg-gray-100 hover:bg-gray-200 border-black/5'} border text-text-main text-sm font-medium transition-all duration-300`}
                     >
                         ← Volver al Dashboard
                     </button>
@@ -692,229 +694,231 @@ ${coldChainData.alert.severity === 'critical'
             </div>
 
             {/* Main Content */}
-            <div className="max-w-7xl mx-auto px-6 py-6">
-                <div className="grid grid-cols-12 gap-6">
-                    {/* Left Panel - Notifications List */}
-                    <div className="col-span-5">
-                        {/* Filters */}
-                        <div className="flex gap-2 mb-4">
-                            {(['all', 'critical', 'warning', 'success', 'info'] as const).map(f => (
-                                <button
-                                    key={f}
-                                    onClick={() => setFilter(f)}
-                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-300 ${filter === f
-                                        ? 'bg-blue-500/20 text-blue-400 border border-blue-500/40'
-                                        : 'bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10'
-                                        }`}
-                                >
-                                    {f === 'all' ? 'Todas' : f === 'critical' ? 'Críticas' : f === 'warning' ? 'Atención' : f === 'success' ? 'Buenas Prácticas' : 'Info'}
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* Notifications List */}
-                        <div className="space-y-3 max-h-[calc(100vh-200px)] overflow-y-auto pr-2">
-                            {filteredNotifications.map(notification => {
-                                const severityConfig = getSeverityConfig(notification.severity);
-                                const statusConfig = getStatusConfig(notification.status);
-                                const isSelected = selectedNotification?.id === notification.id;
-
-                                return (
-                                    <div
-                                        key={notification.id}
-                                        onClick={() => setSelectedNotification(notification)}
-                                        className={`glass-card rounded-xl p-4 cursor-pointer transition-all duration-300 border ${isSelected
-                                            ? `${severityConfig.border} bg-white/5`
-                                            : 'border-white/10 hover:border-white/20 hover:bg-white/5'
+            <div className="flex-1 overflow-hidden">
+                <div className="max-w-7xl mx-auto px-6 py-6 h-full">
+                    <div className="grid grid-cols-12 gap-6 h-full">
+                        {/* Left Panel - Notifications List */}
+                        <div className="col-span-5 flex flex-col h-full">
+                            {/* Filters */}
+                            <div className="flex gap-2 mb-4 flex-wrap">
+                                {(['all', 'critical', 'warning', 'success', 'info'] as const).map(f => (
+                                    <button
+                                        key={f}
+                                        onClick={() => setFilter(f)}
+                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-300 border ${filter === f
+                                            ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/40'
+                                            : `${theme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-gray-100 border-black/5'} text-text-muted hover:bg-surface-accent`
                                             }`}
                                     >
-                                        <div className="flex items-start justify-between gap-3 mb-2">
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <span className={`px-2 py-0.5 rounded text-[8px] font-black tracking-wider ${severityConfig.bg} ${severityConfig.text} border ${severityConfig.border}`}>
-                                                        {severityConfig.label}
-                                                    </span>
-                                                    <span className={`px-2 py-0.5 rounded text-[8px] font-bold ${statusConfig.bg} ${statusConfig.text}`}>
-                                                        {statusConfig.label}
-                                                    </span>
+                                        {f === 'all' ? 'Todas' : f === 'critical' ? 'Críticas' : f === 'warning' ? 'Atención' : f === 'success' ? 'Buenas Prácticas' : 'Info'}
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* Notifications List */}
+                            <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3">
+                                {filteredNotifications.map(notification => {
+                                    const severityConfig = getSeverityConfig(notification.severity);
+                                    const statusConfig = getStatusConfig(notification.status);
+                                    const isSelected = selectedNotification?.id === notification.id;
+
+                                    return (
+                                        <div
+                                            key={notification.id}
+                                            onClick={() => setSelectedNotification(notification)}
+                                            className={`rounded-xl p-4 cursor-pointer transition-all duration-300 border ${isSelected
+                                                ? `${severityConfig.border} ${theme === 'dark' ? 'bg-white/5' : 'bg-blue-50/50'}`
+                                                : `${theme === 'dark' ? 'border-white/10 hover:border-white/20 hover:bg-white/5' : 'border-black/5 hover:border-black/10 hover:bg-gray-50'}`
+                                                }`}
+                                        >
+                                            <div className="flex items-start justify-between gap-3 mb-2">
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <span className={`px-2 py-0.5 rounded text-[8px] font-black tracking-wider ${severityConfig.bg} ${severityConfig.text} border ${severityConfig.border}`}>
+                                                            {severityConfig.label}
+                                                        </span>
+                                                        <span className={`px-2 py-0.5 rounded text-[8px] font-bold ${statusConfig.bg} ${statusConfig.text}`}>
+                                                            {statusConfig.label}
+                                                        </span>
+                                                    </div>
+                                                    <h3 className="text-sm font-bold text-text-main mb-1">{notification.title}</h3>
+                                                    <p className="text-xs text-text-muted line-clamp-2">{notification.description}</p>
                                                 </div>
-                                                <h3 className="text-sm font-bold text-white mb-1">{notification.title}</h3>
-                                                <p className="text-xs text-gray-400 line-clamp-2">{notification.description}</p>
+                                                <div className={`w-1 h-12 rounded-full flex-shrink-0 ${notification.severity === 'critical' ? 'bg-rose-500' :
+                                                    notification.severity === 'warning' ? 'bg-amber-500' :
+                                                        notification.severity === 'success' ? 'bg-emerald-500' :
+                                                            'bg-blue-500'
+                                                    }`}></div>
                                             </div>
-                                            <div className={`w-1 h-12 rounded-full ${notification.severity === 'critical' ? 'bg-rose-500' :
-                                                notification.severity === 'warning' ? 'bg-amber-500' :
-                                                    notification.severity === 'success' ? 'bg-emerald-500' :
-                                                        'bg-blue-500'
-                                                }`}></div>
+                                            <div className="flex items-center justify-between text-[10px] text-text-muted">
+                                                <span>{notification.source}</span>
+                                                <span>{notification.timestamp}</span>
+                                            </div>
                                         </div>
-                                        <div className="flex items-center justify-between text-[10px] text-gray-500">
-                                            <span>{notification.source}</span>
-                                            <span>{notification.timestamp}</span>
-                                        </div>
-                                    </div>
-                                );
-                            })}
+                                    );
+                                })}
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Right Panel - Notification Detail & Actions */}
-                    <div className="col-span-7">
-                        {selectedNotification ? (
-                            <div className="glass-card rounded-xl p-6 border border-white/10">
-                                <div className="mb-6">
-                                    <div className="flex items-start justify-between mb-4">
-                                        <div className="flex-1">
-                                            <div className="flex items-center gap-2 mb-3">
-                                                {(() => {
-                                                    const config = getSeverityConfig(selectedNotification.severity);
-                                                    return (
-                                                        <span className={`px-3 py-1 rounded-lg text-xs font-black tracking-wider ${config.bg} ${config.text} border ${config.border}`}>
-                                                            ● {config.label}
-                                                        </span>
-                                                    );
-                                                })()}
-                                                {(() => {
-                                                    const config = getStatusConfig(selectedNotification.status);
-                                                    return (
-                                                        <span className={`px-3 py-1 rounded-lg text-xs font-bold ${config.bg} ${config.text}`}>
-                                                            {config.label}
-                                                        </span>
-                                                    );
-                                                })()}
+                        {/* Right Panel - Notification Detail & Actions */}
+                        <div className="col-span-7 h-full overflow-hidden flex flex-col">
+                            {selectedNotification ? (
+                                <div className={`rounded-xl p-6 border ${theme === 'dark' ? 'bg-surface border-white/10' : 'bg-white border-black/5 shadow-xl'} flex-1 overflow-y-auto custom-scrollbar`}>
+                                    <div className="mb-6">
+                                        <div className="flex items-start justify-between mb-4">
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-2 mb-3">
+                                                    {(() => {
+                                                        const config = getSeverityConfig(selectedNotification.severity);
+                                                        return (
+                                                            <span className={`px-3 py-1 rounded-lg text-xs font-black tracking-wider ${config.bg} ${config.text} border ${config.border}`}>
+                                                                ● {config.label}
+                                                            </span>
+                                                        );
+                                                    })()}
+                                                    {(() => {
+                                                        const config = getStatusConfig(selectedNotification.status);
+                                                        return (
+                                                            <span className={`px-3 py-1 rounded-lg text-xs font-bold ${config.bg} ${config.text}`}>
+                                                                {config.label}
+                                                            </span>
+                                                        );
+                                                    })()}
 
-                                                {/* Monetary Risk Indicator */}
-                                                {selectedNotification.financialRisk && (
-                                                    <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-rose-500/10 border border-rose-500/30">
-                                                        <span className="text-[10px] font-bold text-rose-400 uppercase tracking-tighter">Riesgo:</span>
-                                                        <span className="text-xs font-black text-white tabular-nums">
-                                                            $ {selectedNotification.financialRisk.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                                                        </span>
-                                                    </div>
-                                                )}
+                                                    {/* Monetary Risk Indicator */}
+                                                    {selectedNotification.financialRisk && (
+                                                        <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-rose-500/10 border border-rose-500/30">
+                                                            <span className="text-[10px] font-bold text-rose-600 dark:text-rose-400 uppercase tracking-tighter">Riesgo:</span>
+                                                            <span className="text-xs font-black text-text-main tabular-nums">
+                                                                $ {selectedNotification.financialRisk.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <h2 className="text-2xl font-bold text-text-main mb-2 tracking-tight">{selectedNotification.title}</h2>
+                                                <p className="text-sm text-text-muted">{selectedNotification.source} • {selectedNotification.timestamp}</p>
                                             </div>
-                                            <h2 className="text-2xl font-bold text-white mb-2">{selectedNotification.title}</h2>
-                                            <p className="text-sm text-gray-400">{selectedNotification.source} • {selectedNotification.timestamp}</p>
                                         </div>
+
+                                        {/* Tabbed Content */}
+                                        <DumaNotificationTabs
+                                            description={selectedNotification.description}
+                                            impact={selectedNotification.impact}
+                                            severity={selectedNotification.severity}
+                                            trend={selectedNotification.trend}
+                                            aiAnalysis={selectedNotification.aiAnalysis}
+                                        />
+
                                     </div>
 
-                                    {/* Tabbed Content */}
-                                    <DumaNotificationTabs
-                                        description={selectedNotification.description}
-                                        impact={selectedNotification.impact}
-                                        severity={selectedNotification.severity}
-                                        trend={selectedNotification.trend}
-                                        aiAnalysis={selectedNotification.aiAnalysis}
-                                    />
+                                    {/* Actions Section */}
+                                    <div className={`border-t ${theme === 'dark' ? 'border-white/10' : 'border-black/5'} pt-6`}>
+                                        <h3 className="text-sm font-bold text-text-main uppercase tracking-wider mb-4">Acciones Ejecutivas</h3>
 
-                                </div>
-
-                                {/* Actions Section */}
-                                <div className="border-t border-white/10 pt-6">
-                                    <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-4">Acciones Ejecutivas</h3>
-
-                                    <div className="space-y-3">
-                                        {/* Congratulations Email - Only for Success */}
-                                        {selectedNotification.severity === 'success' ? (
-                                            <div className={`p-4 rounded-lg border transition-all duration-300 ${selectedNotification.actions.congratulations
-                                                ? 'bg-emerald-500/10 border-emerald-500/30'
-                                                : 'bg-white/5 border-white/10'
-                                                }`}>
-                                                <div className="flex items-center justify-between">
-                                                    <div className="flex-1">
-                                                        <div className="flex items-center gap-2 mb-1">
-                                                            <span className="text-lg">🎉</span>
-                                                            <h4 className="text-sm font-bold text-white">Enviar Felicitación por Correo</h4>
-                                                        </div>
-                                                        <p className="text-xs text-gray-400">Reconocer y felicitar al equipo por su excelente desempeño</p>
-                                                    </div>
-                                                    <button
-                                                        onClick={() => handleAction(selectedNotification.id, 'congratulations')}
-                                                        disabled={selectedNotification.actions.congratulations}
-                                                        className={`px-4 py-2 rounded-lg text-xs font-bold transition-all duration-300 ${selectedNotification.actions.congratulations
-                                                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 cursor-not-allowed'
-                                                            : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 hover:bg-emerald-500/30'
-                                                            }`}
-                                                    >
-                                                        {selectedNotification.actions.congratulations ? '✓ Enviado' : 'Enviar Felicitación'}
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <>
-                                                {/* Email Action - For Critical/Warning/Info */}
-                                                <div className={`p-4 rounded-lg border transition-all duration-300 ${selectedNotification.actions.email
+                                        <div className="space-y-3">
+                                            {/* Congratulations Email - Only for Success */}
+                                            {selectedNotification.severity === 'success' ? (
+                                                <div className={`p-4 rounded-lg border transition-all duration-300 ${selectedNotification.actions.congratulations
                                                     ? 'bg-emerald-500/10 border-emerald-500/30'
-                                                    : 'bg-white/5 border-white/10'
+                                                    : `${theme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-gray-50 border-black/5'}`
                                                     }`}>
-                                                    <div className="flex items-center justify-between">
+                                                    <div className="flex items-center justify-between gap-4">
                                                         <div className="flex-1">
                                                             <div className="flex items-center gap-2 mb-1">
-                                                                <span className="text-lg">📧</span>
-                                                                <h4 className="text-sm font-bold text-white">Enviar Notificación por Correo</h4>
+                                                                <span className="text-lg">🎉</span>
+                                                                <h4 className="text-sm font-bold text-text-main">Enviar Felicitación por Correo</h4>
                                                             </div>
-                                                            <p className="text-xs text-gray-400">Enviar recomendaciones detalladas al equipo responsable</p>
+                                                            <p className="text-xs text-text-muted">Reconocer y felicitar al equipo por su excelente desempeño</p>
                                                         </div>
                                                         <button
-                                                            onClick={() => handleAction(selectedNotification.id, 'email')}
-                                                            disabled={selectedNotification.actions.email}
-                                                            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all duration-300 ${selectedNotification.actions.email
-                                                                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 cursor-not-allowed'
-                                                                : 'bg-blue-500/20 text-blue-400 border border-blue-500/40 hover:bg-blue-500/30'
+                                                            onClick={() => handleAction(selectedNotification.id, 'congratulations')}
+                                                            disabled={selectedNotification.actions.congratulations}
+                                                            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all duration-300 whitespace-nowrap ${selectedNotification.actions.congratulations
+                                                                ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/40 cursor-not-allowed'
+                                                                : 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/40 hover:bg-emerald-500/30'
                                                                 }`}
                                                         >
-                                                            {selectedNotification.actions.email ? '✓ Enviado' : 'Enviar'}
+                                                            {selectedNotification.actions.congratulations ? '✓ Enviado' : 'Enviar Felicitación'}
                                                         </button>
                                                     </div>
                                                 </div>
-
-                                                {/* Smart Audit Action - Only for Critical/Warning */}
-                                                {(selectedNotification.severity === 'critical' || selectedNotification.severity === 'warning') && (
-                                                    <div className={`p-4 rounded-lg border transition-all duration-300 ${selectedNotification.actions.smartAudit
+                                            ) : (
+                                                <>
+                                                    {/* Email Action - For Critical/Warning/Info */}
+                                                    <div className={`p-4 rounded-lg border transition-all duration-300 ${selectedNotification.actions.email
                                                         ? 'bg-emerald-500/10 border-emerald-500/30'
-                                                        : 'bg-white/5 border-white/10'
+                                                        : `${theme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-gray-50 border-black/5'}`
                                                         }`}>
-                                                        <div className="flex items-center justify-between">
+                                                        <div className="flex items-center justify-between gap-4">
                                                             <div className="flex-1">
                                                                 <div className="flex items-center gap-2 mb-1">
-                                                                    <span className="text-lg">📋</span>
-                                                                    <h4 className="text-sm font-bold text-white">Crear Tarea en Smart Audits</h4>
+                                                                    <span className="text-lg">📧</span>
+                                                                    <h4 className="text-sm font-bold text-text-main">Enviar Notificación por Correo</h4>
                                                                 </div>
-                                                                <p className="text-xs text-gray-400">Generar tarea de auditoría para seguimiento y corrección</p>
+                                                                <p className="text-xs text-text-muted">Enviar recomendaciones detalladas al equipo responsable</p>
                                                             </div>
                                                             <button
-                                                                onClick={() => handleAction(selectedNotification.id, 'smartAudit')}
-                                                                disabled={selectedNotification.actions.smartAudit}
-                                                                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all duration-300 ${selectedNotification.actions.smartAudit
-                                                                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 cursor-not-allowed'
-                                                                    : 'bg-purple-500/20 text-purple-400 border border-purple-500/40 hover:bg-purple-500/30'
+                                                                onClick={() => handleAction(selectedNotification.id, 'email')}
+                                                                disabled={selectedNotification.actions.email}
+                                                                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all duration-300 whitespace-nowrap ${selectedNotification.actions.email
+                                                                    ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/40 cursor-not-allowed'
+                                                                    : 'bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/40 hover:bg-blue-500/30'
                                                                     }`}
                                                             >
-                                                                {selectedNotification.actions.smartAudit ? '✓ Creada' : 'Crear Tarea'}
+                                                                {selectedNotification.actions.email ? '✓ Enviado' : 'Enviar'}
                                                             </button>
                                                         </div>
                                                     </div>
-                                                )}
-                                            </>
-                                        )}
-                                    </div>
 
-                                    {/* Future Actions Placeholder */}
-                                    <div className="mt-4 p-4 rounded-lg bg-white/5 border border-white/10 border-dashed">
-                                        <p className="text-xs text-gray-500 text-center">
-                                            <span className="font-bold">Próximamente:</span> Más acciones basadas en otras secciones del dashboard
-                                        </p>
+                                                    {/* Smart Audit Action - Only for Critical/Warning */}
+                                                    {(selectedNotification.severity === 'critical' || selectedNotification.severity === 'warning') && (
+                                                        <div className={`p-4 rounded-lg border transition-all duration-300 ${selectedNotification.actions.smartAudit
+                                                            ? 'bg-emerald-500/10 border-emerald-500/30'
+                                                            : `${theme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-gray-50 border-black/5'}`
+                                                            }`}>
+                                                            <div className="flex items-center justify-between gap-4">
+                                                                <div className="flex-1">
+                                                                    <div className="flex items-center gap-2 mb-1">
+                                                                        <span className="text-lg">📋</span>
+                                                                        <h4 className="text-sm font-bold text-text-main">Crear Tarea en Smart Audits</h4>
+                                                                    </div>
+                                                                    <p className="text-xs text-text-muted">Generar tarea de auditoría para seguimiento y corrección</p>
+                                                                </div>
+                                                                <button
+                                                                    onClick={() => handleAction(selectedNotification.id, 'smartAudit')}
+                                                                    disabled={selectedNotification.actions.smartAudit}
+                                                                    className={`px-4 py-2 rounded-lg text-xs font-bold transition-all duration-300 whitespace-nowrap ${selectedNotification.actions.smartAudit
+                                                                        ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/40 cursor-not-allowed'
+                                                                        : 'bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-500/40 hover:bg-purple-500/30'
+                                                                        }`}
+                                                                >
+                                                                    {selectedNotification.actions.smartAudit ? '✓ Creada' : 'Crear Tarea'}
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </>
+                                            )}
+                                        </div>
+
+                                        {/* Future Actions Placeholder */}
+                                        <div className={`mt-4 p-4 rounded-lg border-dashed border ${theme === 'dark' ? 'bg-white/5 border-white/10' : 'bg-gray-50 border-black/10'}`}>
+                                            <p className="text-xs text-text-muted text-center">
+                                                <span className="font-bold">Próximamente:</span> Más acciones basadas en otras secciones del dashboard
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ) : (
-                            <div className="glass-card rounded-xl p-12 border border-white/10 flex flex-col items-center justify-center text-center h-full">
-                                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-600/20 flex items-center justify-center mb-4">
-                                    <span className="text-4xl">🤖</span>
+                            ) : (
+                                <div className={`rounded-xl p-12 border ${theme === 'dark' ? 'bg-surface border-white/10' : 'bg-white border-black/5 shadow-sm'} flex flex-col items-center justify-center text-center h-full`}>
+                                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-600/20 flex items-center justify-center mb-4">
+                                        <span className="text-4xl">🤖</span>
+                                    </div>
+                                    <h3 className="text-lg font-bold text-text-main mb-2">Selecciona una Notificación</h3>
+                                    <p className="text-sm text-text-muted">Elige una notificación de la lista para ver detalles y acciones disponibles</p>
                                 </div>
-                                <h3 className="text-lg font-bold text-white mb-2">Selecciona una Notificación</h3>
-                                <p className="text-sm text-gray-400">Elige una notificación de la lista para ver detalles y acciones disponibles</p>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -926,6 +930,17 @@ ${coldChainData.alert.severity === 'critical'
         }
         .animate-fade-in {
           animation: fade-in 0.3s ease-out;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 3px;
         }
       `}</style>
         </div>

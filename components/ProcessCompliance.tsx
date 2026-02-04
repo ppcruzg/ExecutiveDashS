@@ -1,9 +1,9 @@
 
-
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Cell } from 'recharts';
 import DumaPage from './DumaPage';
+import { useTheme } from '../context/ThemeContext';
 
 interface ProcessData {
   name: string;
@@ -28,6 +28,8 @@ const ProcessCompliance: React.FC = () => {
   const [roundNumber, setRoundNumber] = useState(1);
   const [isUpdating, setIsUpdating] = useState(false);
   const [currentArea, setCurrentArea] = useState<string>('');
+  const { theme } = useTheme();
+
   const [lastAlert, setLastAlert] = useState<{
     severity: 'critical' | 'warning';
     message: string;
@@ -178,15 +180,15 @@ const ProcessCompliance: React.FC = () => {
             <div className="flex flex-col group cursor-pointer">
               <div className="flex items-baseline gap-2">
                 <span
-                  className={`text-3xl font-bold text-white tabular-nums transition-all duration-700 ${statusInfo.text}`}
+                  className={`text-3xl font-bold tabular-nums transition-all duration-700 ${statusInfo.text}`}
                   style={{
-                    textShadow: `0 0 20px ${statusInfo.glow}, 0 0 40px ${statusInfo.glow}`,
+                    textShadow: theme === 'dark' ? `0 0 20px ${statusInfo.glow}, 0 0 40px ${statusInfo.glow}` : 'none',
                     transform: isUpdating ? 'scale(1.1)' : 'scale(1)'
                   }}>
                   {compliance}%
                 </span>
                 {compliance >= target && (
-                  <span className="text-emerald-400 text-sm animate-bounce">✓</span>
+                  <span className="text-emerald-500 text-sm animate-bounce">✓</span>
                 )}
               </div>
             </div>
@@ -210,21 +212,21 @@ const ProcessCompliance: React.FC = () => {
                 <div className="px-2 py-1 rounded-lg bg-rose-500/10 border border-rose-500/30 backdrop-blur-sm shadow-sm transition-all duration-500">
                   <div className="flex items-center gap-1.5 font-bold">
                     <span className="text-[7px] text-rose-400 uppercase tracking-tighter opacity-80">Riesgo:</span>
-                    <span className="text-[9px] text-white tabular-nums tracking-tight">
+                    <span className="text-[9px] text-text-main tabular-nums tracking-tight">
                       $ {totalRisk.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
                   </div>
                 </div>
               </div>
 
-              <span className="text-sm text-gray-400 font-medium">Meta: {target}%</span>
+              <span className="text-sm text-text-muted font-medium">Meta: {target}%</span>
               {/* Enhanced progress bar with gradient and glow */}
-              <div className="w-28 h-2 bg-white/5 rounded-full mt-2 overflow-hidden backdrop-blur-sm border border-white/10 shadow-inner">
+              <div className="w-28 h-2 bg-surface-accent rounded-full mt-2 overflow-hidden backdrop-blur-sm border border-border-color shadow-inner">
                 <div
                   className={`h-full bg-gradient-to-r ${statusInfo.bg} via-${statusInfo.text.replace('text-', '')}-500 to-${statusInfo.text.replace('text-', '')}-600 rounded-full transition-all duration-1000 ease-out relative`}
                   style={{
                     width: `${compliance}%`,
-                    boxShadow: `0 0 10px ${statusInfo.glow}, 0 0 20px ${statusInfo.glow}`
+                    boxShadow: theme === 'dark' ? `0 0 10px ${statusInfo.glow}, 0 0 20px ${statusInfo.glow}` : 'none'
                   }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"></div>
@@ -271,7 +273,7 @@ const ProcessCompliance: React.FC = () => {
 
                 <CartesianGrid
                   strokeDasharray="3 3"
-                  stroke="#ffffff08"
+                  stroke={theme === 'dark' ? '#ffffff08' : '#00000008'}
                   vertical={false}
                 />
 
@@ -279,7 +281,7 @@ const ProcessCompliance: React.FC = () => {
                   dataKey="name"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: '#9ca3af', fontSize: 10, fontWeight: 600 }}
+                  tick={{ fill: theme === 'dark' ? '#9ca3af' : '#64748b', fontSize: 10, fontWeight: 600 }}
                 />
 
                 <YAxis
@@ -288,28 +290,29 @@ const ProcessCompliance: React.FC = () => {
                 />
 
                 <Tooltip
-                  cursor={{ fill: 'rgba(59, 130, 246, 0.1)' }}
+                  cursor={{ fill: theme === 'dark' ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)' }}
                   content={({ active, payload }) => {
                     if (active && payload && payload.length) {
                       const data = payload[0].payload as ProcessData;
                       const change = data.previous ? data.real - data.previous : 0;
                       return (
                         <div style={{
-                          background: 'rgba(10, 10, 10, 0.95)',
-                          border: '1px solid rgba(59, 130, 246, 0.3)',
+                          background: theme === 'dark' ? 'rgba(10, 10, 10, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                          border: `1px solid ${theme === 'dark' ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.15)'}`,
                           borderRadius: '8px',
                           padding: '8px 12px',
                           backdropFilter: 'blur(12px)',
-                          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.8), 0 0 20px rgba(59, 130, 246, 0.2)'
+                          boxShadow: theme === 'dark' ? '0 8px 32px rgba(0, 0, 0, 0.8), 0 0 20px rgba(59, 130, 246, 0.2)' : '0 8px 32px rgba(0, 0, 0, 0.1)',
+                          color: theme === 'dark' ? '#fff' : '#1e293b'
                         }}>
-                          <p style={{ color: '#60a5fa', fontWeight: 700, marginBottom: '4px', fontSize: '12px' }}>{data.name}</p>
-                          <p style={{ color: '#fff', fontWeight: 600, fontSize: '14px' }}>
+                          <p style={{ color: '#3b82f6', fontWeight: 700, marginBottom: '2px', fontSize: '10px' }}>{data.name.toUpperCase()}</p>
+                          <p style={{ fontWeight: 800, fontSize: '16px', display: 'flex', alignItems: 'baseline', gap: '8px' }}>
                             {data.real}%
                             {change !== 0 && (
                               <span style={{
                                 color: change > 0 ? '#10b981' : '#ef4444',
                                 fontSize: '11px',
-                                marginLeft: '6px'
+                                fontWeight: 700
                               }}>
                                 {change > 0 ? '↑' : '↓'} {Math.abs(change)}%
                               </span>
@@ -344,7 +347,7 @@ const ProcessCompliance: React.FC = () => {
                         fill={fillColor}
                         opacity={isHovered ? 1 : 0.85}
                         style={{
-                          filter: isHovered ? 'drop-shadow(0 0 8px rgba(16, 185, 129, 0.6))' : 'none',
+                          filter: isHovered && theme === 'dark' ? 'drop-shadow(0 0 8px rgba(16, 185, 129, 0.6))' : 'none',
                           transition: 'all 0.3s ease'
                         }}
                       />
@@ -363,7 +366,7 @@ const ProcessCompliance: React.FC = () => {
                 <div key={idx} className="flex-1 flex flex-col items-center gap-0.5">
                   {/* Trend indicator */}
                   {change !== 0 && (
-                    <div className={`text-[10px] font-bold transition-all duration-500 ${change > 0 ? 'text-emerald-400' : 'text-rose-400'
+                    <div className={`text-[10px] font-bold transition-all duration-500 ${change > 0 ? 'text-emerald-500' : 'text-rose-500'
                       }`}>
                       {change > 0 ? '↑' : '↓'}
                     </div>
@@ -371,7 +374,7 @@ const ProcessCompliance: React.FC = () => {
 
                   {/* Progress bar */}
                   <div
-                    className="w-full h-1 rounded-full overflow-hidden bg-white/5 transition-all duration-500"
+                    className="w-full h-1 rounded-full overflow-hidden bg-surface-accent transition-all duration-500"
                     style={{
                       transitionDelay: `${idx * 100}ms`,
                       opacity: isVisible ? 1 : 0
@@ -382,7 +385,7 @@ const ProcessCompliance: React.FC = () => {
                         }`}
                       style={{
                         width: `${item.real}%`,
-                        boxShadow: `0 0 8px ${item.real >= 90 ? 'rgba(16, 185, 129, 0.5)' : item.real >= 80 ? 'rgba(245, 158, 11, 0.5)' : 'rgba(239, 68, 68, 0.5)'}`
+                        boxShadow: theme === 'dark' ? `0 0 8px ${item.real >= 90 ? 'rgba(16, 185, 129, 0.5)' : item.real >= 80 ? 'rgba(245, 158, 11, 0.5)' : 'rgba(239, 68, 68, 0.5)'}` : 'none'
                       }}
                     />
                   </div>
@@ -409,8 +412,8 @@ const ProcessCompliance: React.FC = () => {
                   <button
                     onClick={() => setShowDumaPage(true)}
                     className={`px-2 py-1 rounded-md text-[8px] font-black tracking-wider flex items-center gap-1 transition-all duration-300 cursor-pointer ${lastAlert.severity === 'critical'
-                      ? 'bg-rose-500/20 text-rose-400 border border-rose-500/40 hover:bg-rose-500/30 hover:scale-105'
-                      : 'bg-amber-500/20 text-amber-400 border border-amber-500/40 hover:bg-amber-500/30 hover:scale-105'
+                      ? 'bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/40 hover:bg-rose-500/30 hover:scale-105'
+                      : 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/40 hover:bg-amber-500/30 hover:scale-105'
                       }`}
                     title="Abrir Centro de Notificaciones DUMA"
                   >
@@ -424,14 +427,14 @@ const ProcessCompliance: React.FC = () => {
                   <div className="flex items-start gap-2">
                     <div className="flex-1 min-w-0">
                       <h4 className={`text-[10px] font-bold uppercase tracking-wide mb-1.5 ${lastAlert.severity === 'critical'
-                        ? 'text-rose-400'
-                        : 'text-amber-400'
+                        ? 'text-rose-600 dark:text-rose-400'
+                        : 'text-amber-600 dark:text-amber-400'
                         }`}>
                         {lastAlert.severity === 'critical'
                           ? 'ALERTA CRÍTICA'
                           : 'ATENCIÓN REQUERIDA'}
                       </h4>
-                      <p className="text-[10px] text-gray-300 leading-relaxed">
+                      <p className="text-[10px] text-text-secondary leading-relaxed">
                         {lastAlert.message}
                       </p>
                     </div>

@@ -1,9 +1,9 @@
 
-
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine, Cell } from 'recharts';
 import DumaPage from './DumaPage';
+import { useTheme } from '../context/ThemeContext';
 
 
 // Datos de tendencia semanal - SOLO ventas sin cliente (anomalías)
@@ -35,6 +35,7 @@ const SalesCorrelationChart: React.FC = () => {
   const [lastAlert, setLastAlert] = useState<string | null>(null);
   const [alertAnimation, setAlertAnimation] = useState(false);
   const [showDumaPage, setShowDumaPage] = useState(false);
+  const { theme } = useTheme();
 
   // Estado para eventos de cajas específicas
   const [registerEvents, setRegisterEvents] = useState<Array<{
@@ -255,7 +256,7 @@ const SalesCorrelationChart: React.FC = () => {
       color: 'emerald',
       bgColor: 'bg-emerald-500/10',
       borderColor: 'border-emerald-500/30',
-      textColor: 'text-emerald-400',
+      textColor: 'text-emerald-600 dark:text-emerald-400',
       description: 'Anomalías mínimas'
     };
     if (rate <= 5) return {
@@ -263,7 +264,7 @@ const SalesCorrelationChart: React.FC = () => {
       color: 'blue',
       bgColor: 'bg-blue-500/10',
       borderColor: 'border-blue-500/30',
-      textColor: 'text-blue-400',
+      textColor: 'text-blue-600 dark:text-blue-400',
       description: 'Dentro de rango'
     };
     if (rate <= 10) return {
@@ -271,7 +272,7 @@ const SalesCorrelationChart: React.FC = () => {
       color: 'amber',
       bgColor: 'bg-amber-500/10',
       borderColor: 'border-amber-500/30',
-      textColor: 'text-amber-400',
+      textColor: 'text-amber-600 dark:text-amber-400',
       description: 'Requiere atención'
     };
     return {
@@ -279,7 +280,7 @@ const SalesCorrelationChart: React.FC = () => {
       color: 'rose',
       bgColor: 'bg-rose-500/10',
       borderColor: 'border-rose-500/30',
-      textColor: 'text-rose-400',
+      textColor: 'text-rose-600 dark:text-rose-400',
       description: 'Acción inmediata'
     };
   };
@@ -301,31 +302,37 @@ const SalesCorrelationChart: React.FC = () => {
       const detected = data.totalSales - data.undetected;
 
       return (
-        <div className="bg-[#0a0a0a] border border-white/10 p-3 rounded-lg shadow-xl">
-          <div className="text-white font-bold mb-2">{data.day || data.hour}</div>
+        <div style={{
+          background: theme === 'dark' ? '#0a0a0a' : '#fff',
+          border: `1px solid ${theme === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
+          padding: '12px',
+          borderRadius: '8px',
+          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
+        }}>
+          <div className="font-bold mb-2 text-text-main">{data.day || data.hour}</div>
           <div className="space-y-1 text-xs">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
-              <span className="text-gray-400">Con Cliente:</span>
-              <span className="text-white font-bold">{detected}</span>
+              <span className="text-text-muted">Con Cliente:</span>
+              <span className="text-text-main font-bold">{detected}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-rose-500"></div>
-              <span className="text-gray-400">Sin Cliente (Anomalía):</span>
-              <span className="text-white font-bold">{data.undetected}</span>
+              <span className="text-text-muted">Sin Cliente (Anomalía):</span>
+              <span className="text-text-main font-bold">{data.undetected}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-gray-500"></div>
-              <span className="text-gray-400">Total Ventas:</span>
-              <span className="text-white font-bold">{data.totalSales}</span>
+              <span className="text-text-muted">Total Ventas:</span>
+              <span className="text-text-main font-bold">{data.totalSales}</span>
             </div>
-            <div className="pt-2 mt-2 border-t border-white/10">
-              <span className="text-gray-400">% Sin Cliente:</span>
-              <span className={`font-bold ml-2 ${data.riskRate === 0 ? 'text-emerald-400' :
-                data.riskRate <= 2 ? 'text-blue-400' :
-                  data.riskRate <= 5 ? 'text-amber-400' :
-                    data.riskRate <= 10 ? 'text-orange-400' :
-                      'text-rose-400'
+            <div className={`pt-2 mt-2 border-t ${theme === 'dark' ? 'border-white/10' : 'border-black/5'}`}>
+              <span className="text-text-muted">% Sin Cliente:</span>
+              <span className={`font-bold ml-2 ${data.riskRate === 0 ? 'text-emerald-600 dark:text-emerald-400' :
+                data.riskRate <= 2 ? 'text-blue-600 dark:text-blue-400' :
+                  data.riskRate <= 5 ? 'text-amber-600 dark:text-amber-400' :
+                    data.riskRate <= 10 ? 'text-orange-600 dark:text-orange-400' :
+                      'text-rose-600 dark:text-rose-400'
                 }`}>
                 {data.riskRate}%
               </span>
@@ -344,7 +351,7 @@ const SalesCorrelationChart: React.FC = () => {
         <div className="flex gap-2 mb-2">
           {/* Financial Risk Badge - ÚNICO BADGE DE ESTADO */}
           <div className={`${parseFloat(avgRiskRate) > 5 ? 'bg-rose-500/10 border-rose-500/30' : parseFloat(avgRiskRate) > 2 ? 'bg-amber-500/10 border-amber-500/30' : 'bg-emerald-500/10 border-emerald-500/30'} border p-2 rounded-lg flex-1`}>
-            <div className="text-[9px] text-gray-400 font-bold tracking-widest uppercase mb-0.5">
+            <div className="text-[9px] text-text-muted font-bold tracking-widest uppercase mb-0.5">
               <span className="inline-flex items-center gap-1">
                 <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
@@ -353,7 +360,7 @@ const SalesCorrelationChart: React.FC = () => {
                 RIESGO
               </span>
             </div>
-            <div className={`text-sm font-black ${parseFloat(avgRiskRate) > 5 ? 'text-rose-400' : parseFloat(avgRiskRate) > 2 ? 'text-amber-400' : 'text-emerald-400'} flex items-center gap-1`}>
+            <div className={`text-sm font-black ${parseFloat(avgRiskRate) > 5 ? 'text-rose-600 dark:text-rose-400' : parseFloat(avgRiskRate) > 2 ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'} flex items-center gap-1`}>
               <span className="text-[10px]">$</span>
               {financialRisk.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
@@ -361,10 +368,10 @@ const SalesCorrelationChart: React.FC = () => {
 
           {/* % Ventas sin Cliente */}
           <div className={`${status.bgColor} border ${status.borderColor} p-2 rounded-lg flex-1`}>
-            <div className="text-[9px] text-gray-400 font-bold tracking-widest uppercase mb-0.5">% Sin Cliente</div>
+            <div className="text-[9px] text-text-muted font-bold tracking-widest uppercase mb-0.5">% Sin Cliente</div>
             <div className={`text-lg font-black ${status.textColor}`}>
               {avgRiskRate}%
-              <span className="text-[10px] text-gray-400 ml-1">
+              <span className="text-[10px] text-text-muted ml-1">
                 {parseFloat(avgRiskRate) <= 2 ? '✓' : parseFloat(avgRiskRate) <= 5 ? '◐' : '⚠'}
               </span>
             </div>
@@ -372,22 +379,22 @@ const SalesCorrelationChart: React.FC = () => {
 
           {/* Total Anomalías */}
           <div className={`${alertAnimation ? 'bg-rose-500/20 animate-pulse' : 'bg-rose-500/10'} border ${alertAnimation ? 'border-rose-500/40' : 'border-rose-500/20'} p-2 rounded-lg flex-1 transition-all duration-300`}>
-            <div className="text-[9px] text-rose-400 font-bold tracking-widest uppercase mb-0.5">Anomalías</div>
-            <div className="text-lg font-black text-white">
+            <div className="text-[9px] text-rose-600 dark:text-rose-400 font-bold tracking-widest uppercase mb-0.5">Anomalías</div>
+            <div className="text-lg font-black text-text-main">
               {totalUndetected}
-              <span className="text-[10px] text-gray-400 ml-1">
+              <span className="text-[10px] text-text-muted ml-1">
                 / {totalSales}
               </span>
             </div>
           </div>
 
           {/* Selector de Vista */}
-          <div className="bg-white/5 border border-white/10 p-1 rounded-lg flex flex-col gap-0.5">
+          <div className="bg-surface-accent border border-border-color p-1 rounded-lg flex flex-col gap-0.5">
             <button
               onClick={() => setView('week')}
               className={`px-2 py-0.5 rounded text-[9px] font-bold transition-all ${view === 'week'
-                ? 'bg-blue-500 text-white'
-                : 'bg-transparent text-gray-400 hover:text-white'
+                ? 'bg-blue-600 text-white'
+                : 'bg-transparent text-text-muted hover:text-text-main'
                 }`}
             >
               SEMANA
@@ -395,8 +402,8 @@ const SalesCorrelationChart: React.FC = () => {
             <button
               onClick={() => setView('today')}
               className={`px-2 py-0.5 rounded text-[9px] font-bold transition-all ${view === 'today'
-                ? 'bg-emerald-500 text-white'
-                : 'bg-transparent text-gray-400 hover:text-white'
+                ? 'bg-emerald-600 text-white'
+                : 'bg-transparent text-text-muted hover:text-text-main'
                 }`}
             >
               HOY
@@ -407,8 +414,8 @@ const SalesCorrelationChart: React.FC = () => {
         {/* Alerta en tiempo real */}
         {lastAlert && view === 'today' && (
           <div className={`mb-1.5 p-1.5 rounded-lg border flex items-center gap-1.5 text-[10px] transition-all duration-300 ${alertAnimation
-            ? 'bg-rose-500/20 border-rose-500/40 text-rose-300'
-            : 'bg-amber-500/10 border-amber-500/20 text-amber-300'
+            ? 'bg-rose-500/20 border-rose-500/40 text-rose-700 dark:text-rose-300'
+            : 'bg-amber-500/10 border-amber-500/20 text-amber-700 dark:text-amber-300'
             }`}>
             <svg className="w-3 h-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
@@ -428,18 +435,18 @@ const SalesCorrelationChart: React.FC = () => {
                   <stop offset="95%" stopColor="#ef4444" stopOpacity={0.1} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke={theme === 'dark' ? '#ffffff05' : '#00000005'} vertical={false} />
               <XAxis
                 dataKey={view === 'week' ? 'day' : 'hour'}
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: '#6b7280', fontSize: 10 }}
+                tick={{ fill: theme === 'dark' ? '#6b7280' : '#94a3b8', fontSize: 10 }}
               />
               <YAxis
                 yAxisId="left"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: '#6b7280', fontSize: 10 }}
+                tick={{ fill: theme === 'dark' ? '#6b7280' : '#94a3b8', fontSize: 10 }}
                 label={{ value: 'Anomalías', angle: -90, position: 'insideLeft', fill: '#ef4444', fontSize: 10 }}
               />
               <YAxis
@@ -447,7 +454,7 @@ const SalesCorrelationChart: React.FC = () => {
                 orientation="right"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: '#6b7280', fontSize: 10 }}
+                tick={{ fill: theme === 'dark' ? '#6b7280' : '#94a3b8', fontSize: 10 }}
                 domain={[0, 15]}
                 label={{ value: '% Riesgo', angle: 90, position: 'insideRight', fill: '#f59e0b', fontSize: 10 }}
               />
@@ -515,19 +522,19 @@ const SalesCorrelationChart: React.FC = () => {
         </div>
 
         {/* Footer Info - Compacto */}
-        <div className="mt-1 pt-1 border-t border-white/5 flex justify-between text-[9px] text-gray-500">
+        <div className={`mt-1 pt-1 border-t ${theme === 'dark' ? 'border-white/5' : 'border-black/5'} flex justify-between text-[9px] text-text-muted`}>
           <div className="flex items-center gap-2">
             <span>
-              <span className="text-rose-400 font-bold">{totalUndetected}</span> anomalías
+              <span className="text-rose-600 dark:text-rose-400 font-bold">{totalUndetected}</span> anomalías
             </span>
             <span>•</span>
             <span>
-              <span className="text-emerald-400 font-bold">{totalSales - totalUndetected}</span> normales
+              <span className="text-emerald-600 dark:text-emerald-400 font-bold">{totalSales - totalUndetected}</span> normales
             </span>
             {view === 'today' && (
               <>
                 <span>•</span>
-                <span className="text-blue-400 flex items-center gap-1">
+                <span className="text-blue-600 dark:text-blue-400 flex items-center gap-1">
                   <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></div>
                   MODO DEMO EN VIVO
                 </span>
@@ -535,7 +542,7 @@ const SalesCorrelationChart: React.FC = () => {
             )}
           </div>
           <div>
-            {view === 'week' ? 'Última semana' : 'Hoy'}: <span className="text-white font-bold">{totalSales}</span> ventas totales
+            {view === 'week' ? 'Última semana' : 'Hoy'}: <span className="text-text-main font-bold">{totalSales}</span> ventas totales
           </div>
         </div>
 
@@ -561,10 +568,10 @@ const SalesCorrelationChart: React.FC = () => {
                 <button
                   onClick={() => setShowDumaPage(true)}
                   className={`px-1.5 py-0.5 rounded text-[8px] font-black tracking-wider flex items-center gap-0.5 transition-all duration-300 cursor-pointer ${dumaAlert.severity === 'critical'
-                    ? 'bg-rose-500/20 text-rose-400 border border-rose-500/40 hover:bg-rose-500/30 hover:scale-105'
+                    ? 'bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/40 hover:bg-rose-500/30 hover:scale-105'
                     : dumaAlert.severity === 'warning'
-                      ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40 hover:bg-amber-500/30 hover:scale-105'
-                      : 'bg-blue-500/20 text-blue-400 border border-blue-500/40 hover:bg-blue-500/30 hover:scale-105'
+                      ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/40 hover:bg-amber-500/30 hover:scale-105'
+                      : 'bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/40 hover:bg-blue-500/30 hover:scale-105'
                     }`}
                   title="Abrir Centro de Notificaciones DUMA"
                 >
@@ -578,10 +585,10 @@ const SalesCorrelationChart: React.FC = () => {
                 <div className="flex items-start gap-2">
                   <div className="flex-1 min-w-0">
                     <h4 className={`text-[9px] font-bold uppercase tracking-wide mb-0.5 ${dumaAlert.severity === 'critical'
-                      ? 'text-rose-400'
+                      ? 'text-rose-600 dark:text-rose-400'
                       : dumaAlert.severity === 'warning'
-                        ? 'text-amber-400'
-                        : 'text-blue-400'
+                        ? 'text-amber-600 dark:text-amber-400'
+                        : 'text-blue-600 dark:text-blue-400'
                       }`}>
                       {dumaAlert.severity === 'critical'
                         ? '🚨 ALERTA CRÍTICA - VISIÓN AI'
@@ -589,7 +596,7 @@ const SalesCorrelationChart: React.FC = () => {
                           ? '⚠️ ATENCIÓN REQUERIDA - VISIÓN AI'
                           : '✓ SISTEMA OPERANDO NORMALMENTE'}
                     </h4>
-                    <p className="text-[9px] text-gray-300 leading-tight">
+                    <p className="text-[9px] text-text-secondary leading-tight">
                       {dumaAlert.message}
                     </p>
                   </div>
@@ -632,15 +639,12 @@ const SalesCorrelationChart: React.FC = () => {
           width: 6px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.02);
+          background: transparent;
           border-radius: 3px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(59, 130, 246, 0.3);
+          background: rgba(59, 130, 246, 0.2);
           border-radius: 3px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(59, 130, 246, 0.5);
         }
       `}</style>
       </div>
